@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
+
 import {
   ScrollView,
   Text,
@@ -97,7 +98,7 @@ export default function Homepage() {
           ))}
         </View>
       </ScrollView>
-      {loading ? ( // Display the loading indicator if loading is true
+      {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="blue" />
         </View>
