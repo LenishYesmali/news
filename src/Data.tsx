@@ -1,5 +1,5 @@
-import {View, Text, StyleSheet} from 'react-native';
 import React from 'react';
+import {View, Text, StyleSheet} from 'react-native';
 
 const Data = ({value, title}) => {
   return (
@@ -9,6 +9,7 @@ const Data = ({value, title}) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
@@ -19,6 +20,8 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 16,
+    textAlign: 'justify',
   },
 });
+
 export default Data;

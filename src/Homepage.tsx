@@ -1,20 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
-import axios from 'axios';
-import React, {useEffect, useState} from 'react';
-
 import {
-  ScrollView,
   Text,
-  TouchableOpacity,
   View,
   StyleSheet,
+  ScrollView,
+  TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 
 import NavBar from './NavBar';
 import {API_KEY} from './Constants';
-
+import {fetchNews} from './helpers/api-helper';
 const option = [
   {
     id: 1,
@@ -44,9 +42,10 @@ const option = [
 ];
 
 export default function Homepage() {
-  const [active, setActive] = useState(1);
   const [News, setNews] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [active, setActive] = useState(1);
+  const [isLoading, setLoading] = useState(true);
+
   const navigation = useNavigation();
 
   const handelOptionPress = (id: number, apiUrl: string) => {
@@ -56,13 +55,12 @@ export default function Homepage() {
 
   const fetchNewsByCategory = (apiUrl: string) => {
     setLoading(true);
-    axios
-      .get(apiUrl)
-      .then(res => {
-        setNews(res.data.articles);
+    fetchNews(apiUrl)
+      .then((articles) => {
+        setNews(articles);
       })
-      .catch(err => {
-        console.log(err);
+      .catch((error) => {
+        console.error(error);
       })
       .finally(() => {
         setLoading(false);
@@ -72,12 +70,19 @@ export default function Homepage() {
   useEffect(() => {
     fetchNewsByCategory(option[0].apiUrl);
   }, []);
+
+  const handelNavigation = (news) => {
+    navigation.navigate('Detail', {
+      content: news,
+      title: news.title,
+    });
+  };
   return (
     <View style={styles.container}>
       <NavBar />
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.optionContainer}>
-          {option.map(optionItem => (
+          {option.map((optionItem) => (
             <TouchableOpacity
               key={optionItem.id}
               onPress={() =>
@@ -98,7 +103,8 @@ export default function Homepage() {
           ))}
         </View>
       </ScrollView>
-      {loading ? (
+
+      {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="blue" />
         </View>
@@ -109,12 +115,7 @@ export default function Homepage() {
               <TouchableOpacity
                 key={index.toString()}
                 style={styles.newsItem}
-                onPress={() =>
-                  navigation.navigate('Detail', {
-                    title: news.title,
-                    content: news,
-                  })
-                }>
+                onPress={() => handelNavigation(news)}>
                 <Text style={styles.newsTitle}>{news.title}</Text>
               </TouchableOpacity>
             ))}
@@ -130,39 +131,39 @@ const styles = StyleSheet.create({
     margin: 15,
   },
   optionContainer: {
-    flexDirection: 'row',
     gap: 20,
     marginTop: 20,
     marginBottom: 20,
+    flexDirection: 'row',
   },
   optionItem: {
     alignItems: 'center',
   },
   optionText: {
-    fontSize: 20,
     height: 40,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    fontSize: 20,
     borderRadius: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
   },
   newsContainer: {
     marginTop: 10,
     marginBottom: 120,
   },
   newsItem: {
-    borderWidth: 1,
-    borderColor: 'black',
     margin: 5,
     padding: 5,
+    borderWidth: 1,
     borderRadius: 10,
+    borderColor: 'black',
   },
   newsTitle: {
     fontSize: 16,
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginTop: 280,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
